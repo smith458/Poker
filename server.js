@@ -22,4 +22,42 @@ server.listen(5000, () => {
   console.log('Starting server on port 5000');
 });
 
+// Add the WebSocket handlers
+var players = {};
+io.on('connection', (socket) => {
+  socket.on('new player', () => {
+    players[socket.id] = {
+      x: 300,
+      y: 300
+    };
+  });
+  socket.on('disconnect', () => {
+    delete players[socket.id];
+  })
+  socket.on('movement', (data) => {
+    var player = players[socket.id] || {};
+    if (data.left){
+      player.x -= 5;
+    }
+    if (data.up){
+      player.y -= 5;
+    }
+    if (data.right){
+      player.x += 5;
+    }
+    if (data.down){
+      player.y += 5;
+    }
+  });
+});
+
+setInterval(() => {
+  for (var socket in io.sockets){
+    if (!socket.connected){
+      players[socket.id] = undefined;
+    }
+  }
+},1000);
+
+setInterval(() => io.sockets.emit('state', players), 1000/60);
 setInterval(() => io.sockets.emit('message', 'hi!'), 1000);
