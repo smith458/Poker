@@ -30,6 +30,7 @@ io.on('connection', (socket) => {
       x: 300,
       y: 300
     };
+    socket.emit('assignment', socket.id);
   });
   socket.on('disconnect', () => {
     delete players[socket.id];
@@ -50,14 +51,6 @@ io.on('connection', (socket) => {
     }
   });
 });
-
-setInterval(() => {
-  for (var socket in io.sockets){
-    if (!socket.connected){
-      players[socket.id] = undefined;
-    }
-  }
-},1000);
 
 setInterval(() => io.sockets.emit('state', players), 1000/60);
 setInterval(() => io.sockets.emit('message', 'hi!'), 1000);

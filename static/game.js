@@ -42,7 +42,11 @@ document.addEventListener('keyup', (event) => {
   }
 });
 
+var clientId = "";
+
 socket.emit('new player');
+socket.on('assignment', (id) =>{ myId = id; });
+
 setInterval(() => socket.emit('movement', movement), 1000/60);
 
 
@@ -54,6 +58,7 @@ socket.on('state', (players) =>{
   context.clearRect(0, 0, 800, 600);
   context.fillStyle = 'green';
   for (var id in players){
+    context.fillStyle = id == myId ? 'red' : 'green';
     var player = players[id];
     context.beginPath();
     context.arc(player.x, player.y, 10, 0, 2*Math.PI);
